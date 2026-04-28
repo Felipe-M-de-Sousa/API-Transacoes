@@ -1,104 +1,63 @@
-# 🚀 Projeto DimDim API - Checkpoint DevOps
+🚀 Projeto API Transações - Checkpoint DevOps
+📌 Descrição
+Aplicação Java Spring Boot com banco MySQL, containerizada com Docker.
 
-## 📌 Descrição
+Implementa um CRUD de transações financeiras.
 
-Este projeto consiste em uma aplicação **Java Spring Boot** integrada a um banco de dados **MySQL**, utilizando **Docker** para containerização e execução em ambiente cloud (**Azure VM**).
-
-A aplicação implementa um **CRUD de transações financeiras**.
-
----
-
-## 🧱 Arquitetura
-
-* 🐳 Docker
-* ☕ Java 17 + Spring Boot
-* 🗄️ MySQL 8
-* ☁️ Azure Virtual Machine
-
-A comunicação entre os containers ocorre por meio de uma **rede Docker interna**.
-
----
-
-## 📦 Containers
-
-| Serviço | Nome         | Porta |
-| ------- | ------------ | ----- |
-| MySQL   | mysql-dimdim | 3306  |
-| API     | api-dimdim   | 8080  |
-
----
-
-## ⚙️ Como Executar
-
-### 1. Ligar a VM
-
-Conecte via SSH:
-
-```bash
-ssh adminlnx@IP_DA_VM
-```
-
----
-
-### 2. Subir os containers
-
-```bash
-docker start mysql-dimdim
-docker start api-dimdim
-```
-
----
-
-### 3. Verificar containers (opcional)
-
-```bash
+🧱 Arquitetura
+🐳 Docker
+☕ Java 17 + Spring Boot
+🗄️ MySQL 8
+☁️ Execução local ou em VM (Azure)
+📦 Containers
+Serviço	Nome	Porta
+MySQL	mysql-dimdim	3306
+API	api-dimdim	8080
+🖥️ 1. Execução LOCAL
+🔧 Pré-requisitos
+Docker instalado
+🗄️ Build da imagem MySQL
+cd mysql-dimdim
+docker build -f Dockerfile.mysql -t mysql-dimdim .
+🧱 Criar rede e volume
+docker volume create mysql-dimdim-data
+docker network create dimdim-network
+🚀 Executar container MySQL
+docker run -d \
+  --name mysql-dimdim \
+  --network dimdim-network \
+  -p 3306:3306 \
+  -v mysql-dimdim-data:/var/lib/mysql \
+  mysql-dimdim
+☕ Build da API
+cd ../transacoes-api
+docker build -f Dockerfile.api -t api-dimdim .
+🚀 Executar container da API
+docker run -d \
+  --name api-dimdim \
+  --network dimdim-network \
+  -p 8080:8080 \
+  api-dimdim
+📊 Verificar containers
 docker ps
-```
-
----
-
-## 🧪 Testes da API
-
-### 🔹 Listar transações
-
-```bash
-curl -X GET http://localhost:8080/api/transacoes
-```
-
-### 🔹 Criar transação
-
-```bash
+🧪 Testes da API
+🔍 Listar
+curl http://localhost:8080/api/transacoes
+➕ Criar
 curl -X POST http://localhost:8080/api/transacoes \
  -H "Content-Type: application/json" \
- -d '{"descricao":"Compra mercado","valor":100}'
-```
+ -d '{"descricao":"Teste","valor":100}'
+🌐 Acesso
+👉 No navegador:
 
-### 🔹 Atualizar transação
-
-```bash
-curl -X PUT http://localhost:8080/api/transacoes/1 \
- -H "Content-Type: application/json" \
- -d '{"descricao":"Alterado","valor":200,"dataTransacao":"2024-06-18T00:00:00"}'
-```
-
-### 🔹 Remover transação
-
-```bash
-curl -X DELETE http://localhost:8080/api/transacoes/id
-```
-
----
-
-## 🌐 Acesso à Aplicação
-
-### 📍 Local (dentro da VM)
-
-```bash
+http://localhost:8080/api/transacoes
+☁️ 2. Execução na VM (Azure)
+🔑 Acessar VM
+ssh adminlnx@IP_DA_VM
+▶️ Subir containers
+docker start mysql-dimdim
+docker start api-dimdim
+📊 Verificar
+docker ps
+🧪 Testar na VM
 curl http://localhost:8080/api/transacoes
-```
-
-### 🌍 Externo (via navegador)
-
-```
-http://20.57.65.12:8080/api/transacoes
-```
